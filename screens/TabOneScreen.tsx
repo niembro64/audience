@@ -208,7 +208,7 @@ export default function TabOneScreen({
     <View style={styles.container}>
       <View style={styles.button_parent}>
         <TouchableOpacity
-          style={(styles.button, styles.button_green)}
+          style={[styles.button, styles.button_green]}
           onPress={() => {
             startListening();
           }}
@@ -217,7 +217,7 @@ export default function TabOneScreen({
         </TouchableOpacity>
 
         <TouchableOpacity
-          style={(styles.button, styles.button_red)}
+          style={[styles.button, styles.button_red]}
           onPress={() => {
             stopListening();
           }}
@@ -289,21 +289,23 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
   button: {
+    width: 120,
+    height: 50,
     borderRadius: 8,
     paddingVertical: 10,
     paddingHorizontal: 20,
   },
   button_red: {
     backgroundColor: "#AA3333",
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    // borderRadius: 8,
+    // paddingVertical: 10,
+    // paddingHorizontal: 20,
   },
   button_green: {
     backgroundColor: "#339933",
-    borderRadius: 8,
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    // borderRadius: 8,
+    // paddingVertical: 10,
+    // paddingHorizontal: 20,
   },
   button_text: {
     color: "#FFFFFF",
