@@ -179,17 +179,18 @@ export default function TabOneScreen({
     LiveAudioStream.start();
     LiveAudioStream.on("data", (data: string) => {
       // base64-encoded audio data chunks
-      var chunk: Buffer = Buffer.from(data, "base64");
+      let chunk: Buffer = Buffer.from(data, "base64");
+      let chunkString = chunk.toString();
 
       // setStreamData(data);
       // console.log("data", data);
       bufferIndex = bufferIndex + 1 > bufferIndexMod ? 0 : bufferIndex + 1;
       console.log("bufferIndex", bufferIndex);
-      if (bufferIndex % bufferIndexMod === 0) {
+      if (bufferIndex === 0) {
         setChunkState(chunk.toString());
         // console.log("chunk", chunk.toString());
         console.log(chunk);
-        setChunkStateData(chunk.buffer);
+        // setChunkStateData(chunk.buffer);
       }
 
       // audioFile = new Audio();
