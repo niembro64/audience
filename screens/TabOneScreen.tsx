@@ -1,11 +1,11 @@
-import { PermissionsAndroid, StyleSheet } from "react-native";
+import { Button, PermissionsAndroid, StyleSheet } from "react-native";
 
 import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View } from "../components/Themed";
 import { RootTabScreenProps } from "../types";
 
 import LiveAudioStream, { Options } from "react-native-live-audio-stream";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { Buffer } from "buffer";
 
@@ -13,10 +13,11 @@ export default function TabOneScreen({
   navigation,
 }: RootTabScreenProps<"TabOne">) {
   const [hasPermissionsRecordAudio, setHasPermissionsRecordAudio] =
-    useState(false);
+    useState(true);
   const [hasPermissinosExternalStorage, setHasPermissinosExternalStorage] =
-    useState(false);
-  const [streamData, setStreamData] = useState<any>("test data here");
+    useState(true);
+  const [chunkState, setChunkState] = useState<any>("test data here");
+  const [chunkStateData, setChunkStateData] = useState<any>("test data here");
 
   let audioFile: any = null;
 
@@ -35,6 +36,7 @@ export default function TabOneScreen({
       setHasPermissionsRecordAudio(true);
       console.log("RECORD_AUDIO | You can use the audio");
     } else {
+      setHasPermissionsRecordAudio(false);
       console.log("RECORD_AUDIO | Audio permission denied");
     }
 
@@ -52,44 +54,55 @@ export default function TabOneScreen({
       setHasPermissinosExternalStorage(true);
       console.log("WRITE_EXTERNAL_STORAGE | You can use the audio");
     } else {
+      setHasPermissinosExternalStorage(false);
       console.log("WRITE_EXTERNAL_STORAGE | Audio permission denied");
     }
   };
 
   useEffect(() => {
+    console.log("Asking For Permissions");
     permissionsSetup();
   }, []);
 
-  useEffect(() => {
-    if (hasPermissinosExternalStorage && hasPermissionsRecordAudio) {
-      const options: Options = {
-        sampleRate: 44100, // default 44100
-        channels: 1, // 1 or 2, default 1
-        bitsPerSample: 16, // 8 or 16, default 16
-        audioSource: 6, // android only (see below)
-        wavFile: "test.wav", // default 'audio.wav'
-      };
+  // useEffect(() => {
+  //   if (hasPermissinosExternalStorage && hasPermissionsRecordAudio) {
+  //     const options: Options = {
+  //       sampleRate: 44100, // default 44100
+  //       channels: 1, // 1 or 2, default 1
+  //       bitsPerSample: 16, // 8 or 16, default 16
+  //       audioSource: 6, // android only (see below)
+  //       wavFile: "test.wav", // default 'audio.wav'
+  //     };
 
-      LiveAudioStream.init(options);
-      LiveAudioStream.start();
-      LiveAudioStream.on("data", (data) => {
-        // base64-encoded audio data chunks
-        var chunk = Buffer.from(data, "base64");
+  //     LiveAudioStream.init(options);
+  //     LiveAudioStream.start();
+  //     LiveAudioStream.on("data", (data: string) => {
+  //       // base64-encoded audio data chunks
+  //       var chunk: Buffer = Buffer.from(data, "base64");
 
-        // setStreamData(data);
-        // console.log("data", data);
-        setStreamData(chunk.toString());
-        console.log(chunk);
+  //       // setStreamData(data);
+  //       // console.log("data", data);
+  //       setChunkState(chunk.toString());
+  //       // console.log("chunk", chunk.toString());
+  //       console.log(chunk);
+  //       setChunkStateData(chunk.buffer);
 
-        // audioFile = new Audio();
-        // audioFile.src = "data:audio/wav;base64," + data;
-        // audioFile.play();
-      });
-      return () => {
-        LiveAudioStream.stop();
-      };
-    }
-  }, [hasPermissionsRecordAudio, hasPermissinosExternalStorage]);
+  //       // audioFile = new Audio();
+  //       // audioFile.src = "data:audio/wav;base64," + data;
+  //       // audioFile.play();
+  //     });
+  //     return () => {
+  //       LiveAudioStream.stop();
+  //     };
+  //   }
+  // }, [hasPermissionsRecordAudio, hasPermissinosExternalStorage]);
+
+  /////////////////////////////////////////
+  /////////////////////////////////////////
+  /////////////////////////////////////////
+  /////////////////////////////////////////
+  /////////////////////////////////////////
+  /////////////////////////////////////////
 
   // Permissions.new("android.permission.RECORD_AUDIO").then(permission => {
   //   const options = {
@@ -130,8 +143,8 @@ export default function TabOneScreen({
   //         // base64-encoded audio data chunks
   //         var chunk = Buffer.from(data, "base64");
 
-  //         setStreamData(chunk);
-  //         // setStreamData(data);
+  //         setChunk(chunk);
+  //         // setChunk(data);
   //         console.log(data);
   //       });
   //     }
@@ -144,8 +157,61 @@ export default function TabOneScreen({
   //   // setIsSetup(true);
   // }, []);
 
+  let bufferIndex = 0;
+  let bufferIndexMod = 10;
+
+  const startListening = () => {
+    console.log("startListening");
+    const options: Options = {
+      sampleRate: 44100, // default 44100
+      channels: 1, // 1 or 2, default 1
+      bitsPerSample: 16, // 8 or 16, default 16
+      audioSource: 6, // android only (see below)
+      wavFile: "test.wav", // default 'audio.wav'
+    };
+
+    LiveAudioStream.init(options);
+    LiveAudioStream.start();
+    LiveAudioStream.on("data", (data: string) => {
+      // base64-encoded audio data chunks
+      var chunk: Buffer = Buffer.from(data, "base64");
+
+      // setStreamData(data);
+      // console.log("data", data);
+      bufferIndex++;
+      console.log("bufferIndex", bufferIndex);
+      if (bufferIndex % bufferIndexMod === 0) {
+        setChunkState(chunk.toString());
+        // console.log("chunk", chunk.toString());
+        console.log(chunk);
+        setChunkStateData(chunk.buffer);
+      }
+
+      // audioFile = new Audio();
+      // audioFile.src = "data:audio/wav;base64," + data;
+      // audioFile.play();
+    });
+  };
+
+  const stopListening = () => {
+    console.log("stopListening");
+    LiveAudioStream.stop();
+  };
+
   return (
     <View style={styles.container}>
+      <Button
+        title="Start Listening"
+        onPress={() => {
+          startListening();
+        }}
+      />
+      <Button
+        title="Stop Listening"
+        onPress={() => {
+          stopListening();
+        }}
+      />
       <Text style={styles.title}>Mic Stream Data</Text>
       {/* <View
         style={styles.separator}
@@ -153,7 +219,7 @@ export default function TabOneScreen({
         darkColor="rgba(255,255,255,0.1)"
       /> */}
       <View>
-        <Text style={styles.small_text}>{streamData}</Text>
+        <Text style={styles.small_text}>{chunkState}</Text>
       </View>
       {/* <EditScreenInfo path="/screens/TabOneScreen.tsx" /> */}
     </View>
