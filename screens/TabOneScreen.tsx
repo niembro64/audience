@@ -275,6 +275,7 @@ const styles = StyleSheet.create({
     borderColor: "black",
     padding: 10,
     margin: 10,
+    borderRadius: 10,
   },
   small_text: {
     fontSize: 20,
