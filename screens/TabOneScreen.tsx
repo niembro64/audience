@@ -158,7 +158,7 @@ export default function TabOneScreen({
   // }, []);
 
   let bufferIndex = 0;
-  let bufferIndexMod = 10;
+  let bufferIndexMod = 30;
 
   const startListening = () => {
     console.log("startListening");
@@ -178,7 +178,7 @@ export default function TabOneScreen({
 
       // setStreamData(data);
       // console.log("data", data);
-      bufferIndex++;
+      bufferIndex = bufferIndex + 1 > bufferIndexMod ? 0 : bufferIndex + 1;
       console.log("bufferIndex", bufferIndex);
       if (bufferIndex % bufferIndexMod === 0) {
         setChunkState(chunk.toString());
@@ -200,18 +200,21 @@ export default function TabOneScreen({
 
   return (
     <View style={styles.container}>
-      <Button
-        title="Start Listening"
-        onPress={() => {
-          startListening();
-        }}
-      />
-      <Button
-        title="Stop Listening"
-        onPress={() => {
-          stopListening();
-        }}
-      />
+      <View style={styles.button_parent}>
+        <Button
+          title="Start"
+          onPress={() => {
+            startListening();
+          }}
+          style={styles.button}
+        />
+        <Button
+          title="Stop"
+          onPress={() => {
+            stopListening();
+          }}
+        />
+      </View>
       <Text style={styles.title}>Mic Stream Data</Text>
       {/* <View
         style={styles.separator}
@@ -245,5 +248,17 @@ const styles = StyleSheet.create({
   small_text: {
     fontSize: 5,
     font: "monospace",
+  },
+  button_parent: {
+    width: "100%",
+    height: 100,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
+  },
+  button: {
+    backgroundColor: "#2196F3",
+    padding: 15,
+    borderRadius: 5,
   },
 });
