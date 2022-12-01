@@ -240,13 +240,13 @@ export default function TabOneScreen({
           color="red"
         /> */}
       </View>
-      <Text style={styles.title}>Mic Stream Data</Text>
+      <Text style={styles.title}>Stream Data</Text>
       {/* <View
         style={styles.separator}
         lightColor="#eee"
         darkColor="rgba(255,255,255,0.1)"
       /> */}
-      <View>
+      <View style={styles.small_text_container}>
         <Text style={styles.small_text}>{chunkState}</Text>
       </View>
       {/* <EditScreenInfo path="/screens/TabOneScreen.tsx" /> */}
@@ -269,6 +269,12 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     height: 1,
     width: "80%",
+  },
+  small_text_container: {
+    borderWidth: 1,
+    borderColor: "black",
+    padding: 10,
+    margin: 10,
   },
   small_text: {
     fontSize: 20,
