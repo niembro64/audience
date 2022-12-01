@@ -1,4 +1,9 @@
-import { Button, PermissionsAndroid, StyleSheet } from "react-native";
+import {
+  Button,
+  PermissionsAndroid,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 
 import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View } from "../components/Themed";
@@ -201,19 +206,38 @@ export default function TabOneScreen({
   return (
     <View style={styles.container}>
       <View style={styles.button_parent}>
-        <Button
+        <TouchableOpacity
+          style={(styles.button, styles.button_green)}
+          onPress={() => {
+            startListening();
+          }}
+        >
+          <Text style={styles.button_text}>Start</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={(styles.button, styles.button_red)}
+          onPress={() => {
+            stopListening();
+          }}
+        >
+          <Text style={styles.button_text}>Stop</Text>
+        </TouchableOpacity>
+
+        {/* <Button
           title="Start"
           onPress={() => {
             startListening();
           }}
-          style={styles.button}
+          color="green"
         />
         <Button
           title="Stop"
           onPress={() => {
             stopListening();
           }}
-        />
+          color="red"
+        /> */}
       </View>
       <Text style={styles.title}>Mic Stream Data</Text>
       {/* <View
@@ -257,8 +281,26 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
   button: {
-    backgroundColor: "#2196F3",
-    padding: 15,
-    borderRadius: 5,
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  button_red: {
+    backgroundColor: "#AA3333",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  button_green: {
+    backgroundColor: "#33AA55",
+    borderRadius: 8,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  button_text: {
+    color: "#FFFFFF",
+    fontSize: 20,
+    fontWeight: "bold",
+    alignSelf: "center",
   },
 });
