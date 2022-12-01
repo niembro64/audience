@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     width: "80%",
   },
   small_text: {
-    fontSize: 5,
+    fontSize: 20,
     font: "monospace",
   },
   button_parent: {
