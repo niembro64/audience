@@ -138,13 +138,13 @@ export default function TabOneScreen({
   return (
     <View style={styles.container}>
       <Text style={styles.title}>AudIence Stream Data</Text>
-      <View
+      {/* <View
         style={styles.separator}
         lightColor="#eee"
         darkColor="rgba(255,255,255,0.1)"
-      />
+      /> */}
       <View>
-        <Text>Data: {streamData}</Text>
+        <Text style={styles.small_text}>Data: {streamData}</Text>
       </View>
       {/* <EditScreenInfo path="/screens/TabOneScreen.tsx" /> */}
     </View>
@@ -154,8 +154,9 @@ export default function TabOneScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: "column",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
   },
   title: {
     fontSize: 20,
@@ -165,5 +166,8 @@ const styles = StyleSheet.create({
     marginVertical: 30,
     height: 1,
     width: "80%",
+  },
+  small_text: {
+    fontSize: 7,
   },
 });
