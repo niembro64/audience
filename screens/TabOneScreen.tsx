@@ -300,7 +300,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   button_green: {
-    backgroundColor: "#33AA55",
+    backgroundColor: "#339933",
     borderRadius: 8,
     paddingVertical: 10,
     paddingHorizontal: 20,
