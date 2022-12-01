@@ -12,7 +12,10 @@ import { Buffer } from "buffer";
 export default function TabOneScreen({
   navigation,
 }: RootTabScreenProps<"TabOne">) {
-  const [isSetup, setIsSetup] = useState(false);
+  const [hasPermissionsRecordAudio, setHasPermissionsRecordAudio] =
+    useState(false);
+  const [hasPermissinosExternalStorage, setHasPermissinosExternalStorage] =
+    useState(false);
   const [streamData, setStreamData] = useState<any>("test data here");
 
   let audioFile: any = null;
@@ -29,6 +32,7 @@ export default function TabOneScreen({
       }
     );
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      setHasPermissionsRecordAudio(true);
       console.log("RECORD_AUDIO | You can use the audio");
     } else {
       console.log("RECORD_AUDIO | Audio permission denied");
@@ -45,6 +49,7 @@ export default function TabOneScreen({
       }
     );
     if (granted2 === PermissionsAndroid.RESULTS.GRANTED) {
+      setHasPermissinosExternalStorage(true);
       console.log("WRITE_EXTERNAL_STORAGE | You can use the audio");
     } else {
       console.log("WRITE_EXTERNAL_STORAGE | Audio permission denied");
@@ -53,11 +58,10 @@ export default function TabOneScreen({
 
   useEffect(() => {
     permissionsSetup();
-    setIsSetup(true);
   }, []);
 
   useEffect(() => {
-    if (isSetup) {
+    if (hasPermissinosExternalStorage && hasPermissionsRecordAudio) {
       const options: Options = {
         sampleRate: 44100, // default 44100
         channels: 1, // 1 or 2, default 1
@@ -72,15 +76,20 @@ export default function TabOneScreen({
         // base64-encoded audio data chunks
         var chunk = Buffer.from(data, "base64");
 
-        setStreamData(chunk);
         // setStreamData(data);
+        // console.log("data", data);
+        setStreamData(chunk.toString());
         console.log(chunk);
+
+        // audioFile = new Audio();
+        // audioFile.src = "data:audio/wav;base64," + data;
+        // audioFile.play();
       });
+      return () => {
+        LiveAudioStream.stop();
+      };
     }
-    return () => {
-      LiveAudioStream.stop();
-    };
-  }, [isSetup]);
+  }, [hasPermissionsRecordAudio, hasPermissinosExternalStorage]);
 
   // Permissions.new("android.permission.RECORD_AUDIO").then(permission => {
   //   const options = {
@@ -137,14 +146,14 @@ export default function TabOneScreen({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>AudIence Stream Data</Text>
+      <Text style={styles.title}>Mic Stream Data</Text>
       {/* <View
         style={styles.separator}
         lightColor="#eee"
         darkColor="rgba(255,255,255,0.1)"
       /> */}
       <View>
-        <Text style={styles.small_text}>Data: {streamData}</Text>
+        <Text style={styles.small_text}>{streamData}</Text>
       </View>
       {/* <EditScreenInfo path="/screens/TabOneScreen.tsx" /> */}
     </View>
@@ -168,6 +177,7 @@ const styles = StyleSheet.create({
     width: "80%",
   },
   small_text: {
-    fontSize: 7,
+    fontSize: 5,
+    font: "monospace",
   },
 });
