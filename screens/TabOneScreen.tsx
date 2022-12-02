@@ -30,6 +30,7 @@ export default function TabOneScreen({
     useState(true);
   const [hasPermissinosExternalStorage, setHasPermissinosExternalStorage] =
     useState(true);
+  const [ranPermissionsSetup, setRanPermissionsSetup] = useState(false);
   const [chunkState, setChunkState] = useState<any>("test data here");
   const [chunkStateData, setChunkStateData] = useState<any>("test data here");
 
@@ -71,6 +72,7 @@ export default function TabOneScreen({
       setHasPermissinosExternalStorage(false);
       console.log("WRITE_EXTERNAL_STORAGE | Audio permission denied");
     }
+    setRanPermissionsSetup(true);
   };
 
   useEffect(() => {
@@ -78,105 +80,21 @@ export default function TabOneScreen({
     permissionsSetup();
   }, []);
 
-  // useEffect(() => {
-  //   if (hasPermissinosExternalStorage && hasPermissionsRecordAudio) {
-  //     const options: Options = {
-  //       sampleRate: 44100, // default 44100
-  //       channels: 1, // 1 or 2, default 1
-  //       bitsPerSample: 16, // 8 or 16, default 16
-  //       audioSource: 6, // android only (see below)
-  //       wavFile: "test.wav", // default 'audio.wav'
-  //     };
+  useEffect(() => {
+    if (
+      ranPermissionsSetup &&
+      hasPermissionsRecordAudio &&
+      hasPermissinosExternalStorage
+    ) {
+      setUpLiveAudioStream();
+    }
+  }, [
+    ranPermissionsSetup,
+    hasPermissionsRecordAudio,
+    hasPermissinosExternalStorage,
+  ]);
 
-  //     LiveAudioStream.init(options);
-  //     LiveAudioStream.start();
-  //     LiveAudioStream.on("data", (data: string) => {
-  //       // base64-encoded audio data chunks
-  //       var chunk: Buffer = Buffer.from(data, "base64");
-
-  //       // setStreamData(data);
-  //       // console.log("data", data);
-  //       setChunkState(chunk.toString());
-  //       // console.log("chunk", chunk.toString());
-  //       console.log(chunk);
-  //       setChunkStateData(chunk.buffer);
-
-  //       // audioFile = new Audio();
-  //       // audioFile.src = "data:audio/wav;base64," + data;
-  //       // audioFile.play();
-  //     });
-  //     return () => {
-  //       LiveAudioStream.stop();
-  //     };
-  //   }
-  // }, [hasPermissionsRecordAudio, hasPermissinosExternalStorage]);
-
-  /////////////////////////////////////////
-  /////////////////////////////////////////
-  /////////////////////////////////////////
-  /////////////////////////////////////////
-  /////////////////////////////////////////
-  /////////////////////////////////////////
-
-  // Permissions.new("android.permission.RECORD_AUDIO").then(permission => {
-  //   const options = {
-  //     sampleRate: 16000, // default 44100
-  //     channels: 1, // 1 or 2, default 1
-  //     bitsPerSample: 16, // 8 or 16, default 16
-  //     audioSource: 6, // android only (see below)
-  //     bufferSize: 4096 * 2 // default is 2048
-  //   }
-  //   AudioRecord.init(options)
-  //   AudioRecord.start()
-  // })
-
-  // useEffect(() => {
-  //   async (params: any) => {
-  //     await PermissionsAndroid.requestMultiple([
-  //       PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-  //     ]);
-
-  //     // await PermissionsAndroid.requestMultiple([
-  //     //   PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-  //     // ]);
-
-  //     const options: Options = {
-  //       sampleRate: 32000, // default is 44100 but 32000 is adequate for accurate voice recognition
-  //       channels: 1, // 1 or 2, default 1
-  //       bitsPerSample: 16, // 8 or 16, default 16
-  //       audioSource: 6, // android only (see below)
-  //       wavFile: "test.wav", // default 'audio.wav'
-  //       bufferSize: 4096, // default is 2048
-  //     };
-
-  //     LiveAudioStream.init(options);
-
-  //     if (isSetup) {
-  //       LiveAudioStream.start();
-  //       LiveAudioStream.on("data", (data) => {
-  //         // base64-encoded audio data chunks
-  //         var chunk = Buffer.from(data, "base64");
-
-  //         setChunk(chunk);
-  //         // setChunk(data);
-  //         console.log(data);
-  //       });
-  //     }
-  //   };
-  //   return () => {
-  //     if (isSetup) {
-  //       audioFile = LiveAudioStream.stop();
-  //     }
-  //   };
-  //   // setIsSetup(true);
-  // }, []);
-
-  let bufferIndex = 0;
-  let bufferIndexMod = 30;
-
-  const startListening = () => {
-    setIsStreaming(true);
-    console.log("startListening");
+  const setUpLiveAudioStream = () => {
     const options: Options = {
       sampleRate: 44100, // default 44100
       channels: 1, // 1 or 2, default 1
@@ -186,7 +104,7 @@ export default function TabOneScreen({
     };
 
     LiveAudioStream.init(options);
-    LiveAudioStream.start();
+    // LiveAudioStream.start();
     LiveAudioStream.on("data", (data: string) => {
       // base64-encoded audio data chunks
       let chunk: Buffer = Buffer.from(data, "base64");
@@ -200,14 +118,36 @@ export default function TabOneScreen({
       if (bufferIndex === 0) {
         setChunkState(chunk.toString());
         // console.log("chunk", chunk.toString());
+        console.log(JSON.parse(JSON.stringify(chunk)).data.toString());
         // console.log(chunk);
-        console.log(chunk.toString());
+        // console.log(chunk.toString());
         // setChunkStateData(chunk.buffer);
       }
 
       // audioFile = new Audio();
       // audioFile.src = "data:audio/wav;base64," + data;
       // audioFile.play();
+    });
+  };
+
+  let bufferIndex = 0;
+  let bufferIndexMod = 30;
+
+  const startListening = () => {
+    setIsStreaming(true);
+    console.log("startListening");
+    LiveAudioStream.start();
+    LiveAudioStream.on("data", (data: string) => {
+      // base64-encoded audio data chunks
+      let chunk: Buffer = Buffer.from(data, "base64");
+      let chunkString: string = chunk.toString();
+
+      bufferIndex = bufferIndex + 1 > bufferIndexMod ? 0 : bufferIndex + 1;
+      console.log("bufferIndex", bufferIndex);
+      if (bufferIndex === 0) {
+        setChunkState(chunk.toString());
+        console.log(chunk);
+      }
     });
   };
 
