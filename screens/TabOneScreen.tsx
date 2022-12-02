@@ -114,10 +114,11 @@ export default function TabOneScreen({
       // setStreamData(data);
       // console.log("data", data);
       bufferIndex = bufferIndex + 1 > bufferIndexMod ? 0 : bufferIndex + 1;
-      console.log("bufferIndex", bufferIndex);
+      console.log(bufferIndex);
       if (bufferIndex === 0) {
         setChunkState(chunk.toString());
         // console.log("chunk", chunk.toString());
+        console.log("data");
         console.log(JSON.parse(JSON.stringify(chunk)).data.toString());
         // console.log(chunk);
         // console.log(chunk.toString());
@@ -160,30 +161,24 @@ export default function TabOneScreen({
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Stream Data</Text>
-
       <View style={styles.small_text_container}>
         <Text style={styles.small_text}>{chunkState}</Text>
       </View>
-      {!isStreaming && (
-        <TouchableOpacity
-          style={[styles.button, styles.button_green]}
-          onPress={() => {
-            startListening();
-          }}
-        >
-          <Text style={styles.button_text}>Start</Text>
-        </TouchableOpacity>
-      )}
-      {isStreaming && (
-        <TouchableOpacity
-          style={[styles.button, styles.button_red]}
-          onPress={() => {
+      <TouchableOpacity
+        style={[
+          styles.button,
+          isStreaming ? styles.button_red : styles.button_green,
+        ]}
+        onPress={() => {
+          if (isStreaming) {
             stopListening();
-          }}
-        >
-          <Text style={styles.button_text}>Stop</Text>
-        </TouchableOpacity>
-      )}
+          } else {
+            startListening();
+          }
+        }}
+      >
+        <Text style={styles.button_text}>{isStreaming ? "Stop" : "Start"}</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -221,7 +216,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   small_text: {
-    fontSize: 20,
+    fontSize: 30,
     font: "monospace",
   },
   button_parent: {
