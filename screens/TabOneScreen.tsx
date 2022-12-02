@@ -13,10 +13,18 @@ import LiveAudioStream, { Options } from "react-native-live-audio-stream";
 import React, { useEffect, useState } from "react";
 
 import { Buffer } from "buffer";
+import { LogBox } from "react-native";
+
+export function ignoreWarningLogs() {
+  LogBox.ignoreLogs(["new NativeEventEmitter"]); // Ignore log notification by message
+  LogBox.ignoreAllLogs(); //Ignore all log notifications
+}
 
 export default function TabOneScreen({
   navigation,
 }: RootTabScreenProps<"TabOne">) {
+  ignoreWarningLogs();
+
   const [isStreaming, setIsStreaming] = useState(false);
   const [hasPermissionsRecordAudio, setHasPermissionsRecordAudio] =
     useState(true);
@@ -182,7 +190,8 @@ export default function TabOneScreen({
     LiveAudioStream.on("data", (data: string) => {
       // base64-encoded audio data chunks
       let chunk: Buffer = Buffer.from(data, "base64");
-      let chunkString = chunk.toString();
+      let chunkString: string = chunk.toString();
+      // let chunkObject: any = JSON.parse(chunkString);
 
       // setStreamData(data);
       // console.log("data", data);
@@ -191,7 +200,8 @@ export default function TabOneScreen({
       if (bufferIndex === 0) {
         setChunkState(chunk.toString());
         // console.log("chunk", chunk.toString());
-        console.log(chunk);
+        // console.log(chunk);
+        console.log(chunk.toString());
         // setChunkStateData(chunk.buffer);
       }
 
@@ -248,6 +258,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
+    marginTop: 20,
+    marginBottom: 10,
   },
   separator: {
     marginVertical: 30,
@@ -278,6 +290,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingVertical: 10,
     paddingHorizontal: 20,
+    margin: 10,
   },
   button_red: {
     backgroundColor: "#AA3333",
