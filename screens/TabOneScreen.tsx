@@ -11,6 +11,7 @@ import LiveAudioStream, { Options } from "react-native-live-audio-stream";
 import React, { useEffect, useState } from "react";
 import { Buffer } from "buffer";
 import { LogBox } from "react-native";
+
 export function ignoreWarningLogs() {
   LogBox.ignoreLogs(["new NativeEventEmitter"]); // Ignore log notification by message
   LogBox.ignoreAllLogs(); //Ignore all log notifications
