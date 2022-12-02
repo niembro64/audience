@@ -32,9 +32,7 @@ export default function TabOneScreen({
     useState(true);
   const [ranPermissionsSetup, setRanPermissionsSetup] = useState(false);
   const [chunkState, setChunkState] = useState<any>("test data here");
-  const [chunkStateData, setChunkStateData] = useState<any>("test data here");
-
-  let audioFile: any = null;
+  const [chunkArray, setChunkArray] = useState<any>([]);
 
   const permissionsSetup = async () => {
     const granted = await PermissionsAndroid.request(
@@ -107,13 +105,16 @@ export default function TabOneScreen({
     LiveAudioStream.on("data", (data: string) => {
       // base64-encoded audio data chunks
       let chunk: Buffer = Buffer.from(data, "base64");
-      let chunkString: string = chunk.toString();
       bufferIndex = bufferIndex + 1 > bufferIndexMod ? 0 : bufferIndex + 1;
       console.log(bufferIndex);
       if (bufferIndex === 0) {
         setChunkState(chunk.toString());
         console.log("data");
-        console.log(JSON.parse(JSON.stringify(chunk)).data.toString());
+        let cArray =
+          "[" + JSON.parse(JSON.stringify(chunk)).data.toString() + "]";
+        console.log(cArray);
+
+        setChunkArray([...cArray]);
       }
     });
   };
