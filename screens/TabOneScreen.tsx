@@ -17,6 +17,7 @@ import { Buffer } from "buffer";
 export default function TabOneScreen({
   navigation,
 }: RootTabScreenProps<"TabOne">) {
+  const [isStreaming, setIsStreaming] = useState(false);
   const [hasPermissionsRecordAudio, setHasPermissionsRecordAudio] =
     useState(true);
   const [hasPermissinosExternalStorage, setHasPermissinosExternalStorage] =
@@ -166,6 +167,7 @@ export default function TabOneScreen({
   let bufferIndexMod = 30;
 
   const startListening = () => {
+    setIsStreaming(true);
     console.log("startListening");
     const options: Options = {
       sampleRate: 44100, // default 44100
@@ -200,13 +202,19 @@ export default function TabOneScreen({
   };
 
   const stopListening = () => {
+    setIsStreaming(false);
     console.log("stopListening");
     LiveAudioStream.stop();
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.button_parent}>
+      <Text style={styles.title}>Stream Data</Text>
+
+      <View style={styles.small_text_container}>
+        <Text style={styles.small_text}>{chunkState}</Text>
+      </View>
+      {!isStreaming && (
         <TouchableOpacity
           style={[styles.button, styles.button_green]}
           onPress={() => {
@@ -215,7 +223,8 @@ export default function TabOneScreen({
         >
           <Text style={styles.button_text}>Start</Text>
         </TouchableOpacity>
-
+      )}
+      {isStreaming && (
         <TouchableOpacity
           style={[styles.button, styles.button_red]}
           onPress={() => {
@@ -224,32 +233,7 @@ export default function TabOneScreen({
         >
           <Text style={styles.button_text}>Stop</Text>
         </TouchableOpacity>
-
-        {/* <Button
-          title="Start"
-          onPress={() => {
-            startListening();
-          }}
-          color="green"
-        />
-        <Button
-          title="Stop"
-          onPress={() => {
-            stopListening();
-          }}
-          color="red"
-        /> */}
-      </View>
-      <Text style={styles.title}>Stream Data</Text>
-      {/* <View
-        style={styles.separator}
-        lightColor="#eee"
-        darkColor="rgba(255,255,255,0.1)"
-      /> */}
-      <View style={styles.small_text_container}>
-        <Text style={styles.small_text}>{chunkState}</Text>
-      </View>
-      {/* <EditScreenInfo path="/screens/TabOneScreen.tsx" /> */}
+      )}
     </View>
   );
 }
@@ -259,7 +243,7 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     alignItems: "center",
-    justifyContent: "flex-start",
+    justifyContent: "space-between",
   },
   title: {
     fontSize: 20,
