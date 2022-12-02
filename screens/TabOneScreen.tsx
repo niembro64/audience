@@ -86,7 +86,7 @@ export default function TabOneScreen({
       hasPermissionsRecordAudio &&
       hasPermissinosExternalStorage
     ) {
-      setUpLiveAudioStream();
+      initAudioStream();
     }
   }, [
     ranPermissionsSetup,
@@ -94,7 +94,7 @@ export default function TabOneScreen({
     hasPermissinosExternalStorage,
   ]);
 
-  const setUpLiveAudioStream = () => {
+  const initAudioStream = () => {
     const options: Options = {
       sampleRate: 44100, // default 44100
       channels: 1, // 1 or 2, default 1
@@ -134,7 +134,7 @@ export default function TabOneScreen({
   let bufferIndex = 0;
   let bufferIndexMod = 30;
 
-  const startListening = () => {
+  const startAudioStream = () => {
     setIsStreaming(true);
     console.log("startListening");
     LiveAudioStream.start();
@@ -152,7 +152,7 @@ export default function TabOneScreen({
     });
   };
 
-  const stopListening = () => {
+  const stopAudioStream = () => {
     setIsStreaming(false);
     console.log("stopListening");
     LiveAudioStream.stop();
@@ -164,21 +164,31 @@ export default function TabOneScreen({
       <View style={styles.small_text_container}>
         <Text style={styles.small_text}>{chunkState}</Text>
       </View>
-      <TouchableOpacity
-        style={[
-          styles.button,
-          isStreaming ? styles.button_red : styles.button_green,
-        ]}
-        onPress={() => {
-          if (isStreaming) {
-            stopListening();
-          } else {
-            startListening();
-          }
-        }}
-      >
-        <Text style={styles.button_text}>{isStreaming ? "Stop" : "Start"}</Text>
-      </TouchableOpacity>
+      <View style={styles.button_parent}>
+        <TouchableOpacity
+          style={[styles.button, styles.button_purple]}
+          onPress={() => initAudioStream()}
+        >
+          <Text style={styles.button_text}>Initialize</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            isStreaming ? styles.button_red : styles.button_green,
+          ]}
+          onPress={() => {
+            if (isStreaming) {
+              stopAudioStream();
+            } else {
+              startAudioStream();
+            }
+          }}
+        >
+          <Text style={styles.button_text}>
+            {isStreaming ? "Stop" : "Start"}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -236,15 +246,12 @@ const styles = StyleSheet.create({
   },
   button_red: {
     backgroundColor: "#AA3333",
-    // borderRadius: 8,
-    // paddingVertical: 10,
-    // paddingHorizontal: 20,
   },
   button_green: {
     backgroundColor: "#339933",
-    // borderRadius: 8,
-    // paddingVertical: 10,
-    // paddingHorizontal: 20,
+  },
+  button_purple: {
+    backgroundColor: "#3333AA",
   },
   button_text: {
     color: "#FFFFFF",
