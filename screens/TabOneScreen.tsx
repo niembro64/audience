@@ -267,11 +267,14 @@ const styles = StyleSheet.create({
     width: "80%",
   },
   small_text_container: {
-    borderWidth: 1,
+    width: "90%",
+    height: 300,
+    borderWidth: 5,
     borderColor: "black",
     padding: 10,
     margin: 10,
     borderRadius: 10,
+    overflow: "hidden",
   },
   small_text: {
     fontSize: 20,

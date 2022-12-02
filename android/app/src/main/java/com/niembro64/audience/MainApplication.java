@@ -73,6 +73,19 @@ public class MainApplication extends Application implements ReactApplication {
     ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig);
   }
 
+
+    // EMN ADDED 2022-12-01
+    // Required for rn built in EventEmitter Calls.
+    @ReactMethod
+    public void addListener(String eventName) {
+
+    }
+
+    @ReactMethod
+    public void removeListeners(Integer count) {
+
+    }
+
   /**
    * Loads Flipper in React Native templates. Call this in the onCreate method with something like
    * initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
