@@ -4,27 +4,21 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
-
 import EditScreenInfo from "../components/EditScreenInfo";
 import { Text, View } from "../components/Themed";
 import { RootTabScreenProps } from "../types";
-
 import LiveAudioStream, { Options } from "react-native-live-audio-stream";
 import React, { useEffect, useState } from "react";
-
 import { Buffer } from "buffer";
 import { LogBox } from "react-native";
-
 export function ignoreWarningLogs() {
   LogBox.ignoreLogs(["new NativeEventEmitter"]); // Ignore log notification by message
   LogBox.ignoreAllLogs(); //Ignore all log notifications
 }
-
 export default function TabOneScreen({
   navigation,
 }: RootTabScreenProps<"TabOne">) {
   ignoreWarningLogs();
-
   const [isStreaming, setIsStreaming] = useState(false);
   const [hasPermissionsRecordAudio, setHasPermissionsRecordAudio] =
     useState(true);
@@ -33,7 +27,9 @@ export default function TabOneScreen({
   const [ranPermissionsSetup, setRanPermissionsSetup] = useState(false);
   const [chunkState, setChunkState] = useState<any>("test data here");
   const [chunkArray, setChunkArray] = useState<any>([]);
-
+  let chunkArrayMeanFloat: number[] = [];
+  let chunkArrayMeanInt: number[] = [];
+  let percentKeep: number = 0.99;
   const permissionsSetup = async () => {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
@@ -52,7 +48,6 @@ export default function TabOneScreen({
       setHasPermissionsRecordAudio(false);
       console.log("RECORD_AUDIO | Audio permission denied");
     }
-
     const granted2 = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
       {
@@ -72,12 +67,10 @@ export default function TabOneScreen({
     }
     setRanPermissionsSetup(true);
   };
-
   useEffect(() => {
     console.log("Asking For Permissions");
     permissionsSetup();
   }, []);
-
   useEffect(() => {
     if (
       ranPermissionsSetup &&
@@ -91,7 +84,6 @@ export default function TabOneScreen({
     hasPermissionsRecordAudio,
     hasPermissinosExternalStorage,
   ]);
-
   const initAudioStream = () => {
     const options: Options = {
       sampleRate: 44100, // default 44100
@@ -100,7 +92,6 @@ export default function TabOneScreen({
       audioSource: 6, // android only (see below)
       wavFile: "test.wav", // default 'audio.wav'
     };
-
     LiveAudioStream.init(options);
     LiveAudioStream.on("data", (data: string) => {
       // base64-encoded audio data chunks
@@ -110,30 +101,51 @@ export default function TabOneScreen({
       if (bufferIndex === 0) {
         setChunkState(chunk.toString());
         console.log("data");
-        let cArray =
+        let cArrayString =
           "[" + JSON.parse(JSON.stringify(chunk)).data.toString() + "]";
-        console.log(cArray);
-
-        setChunkArray([...cArray]);
+        // console.log(cArrayString);
+        let cArrayData = JSON.parse(cArrayString);
+        // console.log(JSON.stringify(cArrayData, null, 2));
+        if (chunkArrayMeanFloat.length > 0) {
+          cArrayData.forEach((x: number, i: number) => {
+            chunkArrayMeanFloat[i] =
+              chunkArrayMeanFloat[i] * percentKeep + x * (1 - percentKeep);
+          });
+          chunkArrayMeanFloat.forEach((x: number, i: number) => {
+            chunkArrayMeanInt[i] = Math.round(x / 32);
+          });
+          console.log(chunkArrayMeanInt);
+          // cArrayData.forEach((x, i) => {
+          //   chunkArrayMean[i] = 1;
+          // });
+          // chunkArrayMean.forEach((element, index) => {
+          //   chunkArrayMean[index] = Math.floor(
+          //     element * percentKeep + cArrayData[index] * (1 - percentKeep)
+          //   );
+          // });
+          // chunkArrayMean = chunkArrayMean.map((item, i) => {
+          //   return item * (1 - percentKeep) + cArrayData[i] * percentKeep;
+          // });
+        } else {
+          chunkArrayMeanFloat = [...cArrayData];
+        }
+        // console.log(JSON.stringify(chunkArrayMeanFloat));
+        // setChunkArray([...cArrayString]);
       }
     });
   };
-
   let bufferIndex = 0;
   let bufferIndexMod = 30;
-
   const startAudioStream = () => {
     setIsStreaming(true);
     console.log("startListening");
     LiveAudioStream.start();
   };
-
   const stopAudioStream = () => {
     setIsStreaming(false);
     console.log("stopListening");
     LiveAudioStream.stop();
   };
-
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Stream Data</Text>
@@ -168,7 +180,6 @@ export default function TabOneScreen({
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
