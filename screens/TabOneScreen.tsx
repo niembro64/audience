@@ -104,30 +104,17 @@ export default function TabOneScreen({
     };
 
     LiveAudioStream.init(options);
-    // LiveAudioStream.start();
     LiveAudioStream.on("data", (data: string) => {
       // base64-encoded audio data chunks
       let chunk: Buffer = Buffer.from(data, "base64");
       let chunkString: string = chunk.toString();
-      // let chunkObject: any = JSON.parse(chunkString);
-
-      // setStreamData(data);
-      // console.log("data", data);
       bufferIndex = bufferIndex + 1 > bufferIndexMod ? 0 : bufferIndex + 1;
       console.log(bufferIndex);
       if (bufferIndex === 0) {
         setChunkState(chunk.toString());
-        // console.log("chunk", chunk.toString());
         console.log("data");
         console.log(JSON.parse(JSON.stringify(chunk)).data.toString());
-        // console.log(chunk);
-        // console.log(chunk.toString());
-        // setChunkStateData(chunk.buffer);
       }
-
-      // audioFile = new Audio();
-      // audioFile.src = "data:audio/wav;base64," + data;
-      // audioFile.play();
     });
   };
 
@@ -138,18 +125,6 @@ export default function TabOneScreen({
     setIsStreaming(true);
     console.log("startListening");
     LiveAudioStream.start();
-    LiveAudioStream.on("data", (data: string) => {
-      // base64-encoded audio data chunks
-      let chunk: Buffer = Buffer.from(data, "base64");
-      let chunkString: string = chunk.toString();
-
-      bufferIndex = bufferIndex + 1 > bufferIndexMod ? 0 : bufferIndex + 1;
-      console.log("bufferIndex", bufferIndex);
-      if (bufferIndex === 0) {
-        setChunkState(chunk.toString());
-        console.log(chunk);
-      }
-    });
   };
 
   const stopAudioStream = () => {
